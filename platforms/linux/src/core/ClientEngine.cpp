@@ -2430,6 +2430,7 @@ namespace {
 State &state(IBusEngine *engine) {
   return *reinterpret_cast<MsimeIbusEngine *>(engine)->state;
 }
+void show_input_mode_hint(IBusEngine *engine);
 void clipboard_complete(GObject *source, GAsyncResult *result, gpointer) {
   auto self = reinterpret_cast<MsimeIbusEngine *>(source);
   if (!self->state)
@@ -4522,6 +4523,8 @@ void focus_in(IBusEngine *engine) {
                                                            s.session)});
     watch_clipboard_history(engine);
     sync_global_input_mode(engine);
+    if ((!already_focused || s.session != previous_session) && s.session)
+      show_input_mode_hint(engine);
     // IBus may replay focus after negotiating client identity. Re-focusing
     // the same runtime would cancel input already typed during negotiation.
     if (s.session && (!already_focused || s.session != previous_session))
