@@ -4523,8 +4523,6 @@ void focus_in(IBusEngine *engine) {
                                                            s.session)});
     watch_clipboard_history(engine);
     sync_global_input_mode(engine);
-    if ((!already_focused || s.session != previous_session) && s.session)
-      show_input_mode_hint(engine);
     // IBus may replay focus after negotiating client identity. Re-focusing
     // the same runtime would cancel input already typed during negotiation.
     if (s.session && (!already_focused || s.session != previous_session))
@@ -4539,6 +4537,8 @@ void focus_in(IBusEngine *engine) {
       // without re-registering it or disturbing repeated focus negotiation.
       publish_mode(engine);
     }
+    if (!already_focused || s.session != previous_session)
+      show_input_mode_hint(engine);
     sync_music(engine);
     schedule_upgrade_restart(engine);
   });
