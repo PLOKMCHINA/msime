@@ -5831,8 +5831,21 @@ void show_input_mode_hint(IBusEngine *engine) {
   ++s.mode_hint_id;
   if (s.mode_hint_id == 0)
     ++s.mode_hint_id;
+  // The same five states the input-mode property and tray show: the schemes are
+  // separate keyboards now, so a Japanese or Korean context says 日/한, not 中, and
+  // CapsLock says ⇪ instead of being hidden behind 中/英.
+  const auto scheme = s.scheme_override.value_or(
+      configured.at("preferences").value("scheme", std::string{}));
+  const char *label = "中";
+  switch (msime::linux_host::input_mode_indicator(s.input_enabled, scheme, s.caps_lock)) {
+  case msime::linux_host::InputModeIndicator::Chinese: label = "中"; break;
+  case msime::linux_host::InputModeIndicator::Japanese: label = "日"; break;
+  case msime::linux_host::InputModeIndicator::Korean: label = "한"; break;
+  case msime::linux_host::InputModeIndicator::English: label = "英"; break;
+  case msime::linux_host::InputModeIndicator::CapsLock: label = "⇪"; break;
+  }
   ibus_engine_update_auxiliary_text(
-      engine, ibus_text_new_from_string(s.input_enabled ? "中" : "英"), TRUE);
+      engine, ibus_text_new_from_string(label), TRUE);
   auto *notice = new ModeHintNotice{engine, s.alive, s.mode_hint_id};
   g_timeout_add_full(
       G_PRIORITY_DEFAULT, 1200,

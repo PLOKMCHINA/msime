@@ -5984,7 +5984,10 @@ void FcitxState::showInputModeHud() {
   // 消失，正是这个提示需要的三件事。
   if (!preferences_.value("input_mode_hud", true)) return;
   if (restricted() || privateInput() || !ic_.hasFocus()) return;
-  const std::string label = input_enabled_ ? "中" : "英";
+  // The same label the tray and panel show (modeIndicatorLabel): the schemes are
+  // separate keyboards now, so a Japanese or Korean context must say 日/한, not 中,
+  // and CapsLock says ⇪ as the indicator does rather than being hidden behind 中/英.
+  const std::string label = modeIndicatorLabel();
 #ifdef MSIME_FCITX5_MODE_BADGE
   // 自绘徽章带产品 logo，面板那个提示只能显示文字。连不上合成器或没有 layer-shell 时
   // 记下来不再重试，回退到文字提示——提示少一张图，好过没有提示。
