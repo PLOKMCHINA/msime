@@ -5549,6 +5549,9 @@ public:
               fcitx::StatusGroup::InputMethod, &voice_action_);
         state->render();
         state->syncMusic();
+        // After the panel is drawn, as the toggle does: render() refreshes the
+        // input panel and would clear a hint shown before it.
+        state->showInputModeHud();
       }
     } catch (const OptionsNotConfigured &) { notConfigured(*state, true); }
     catch (...) { unavailable(*state); }
